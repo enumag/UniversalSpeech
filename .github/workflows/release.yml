@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  release:
+    runs-on: windows-2022
+    name: Release
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: mingw32
+        pacboy: |
+          make:
+          gcc:p
+
+    - name: Build
+      shell: msys2 {0}
+      run: make mode=release
+
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      with:
+        draft: false
+        fail_on_unmatched_files: true
+        files: |
+          UniversalSpeech.dll
